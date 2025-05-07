@@ -1,90 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Non-alcoholic Drinks (JSON)</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Non-alcoholic Drinks (JSON)</title>
 </head>
 <body>
 
-    <h1>Non-alcoholic Drinks (JSON)</h1>
-    <a href="../index.html">Home</a>
+  <h1>Non-alcoholic Drinks (JSON)</h1>
+  <a href="../index.html">Home</a>
 
-    <h2>Dataset Information</h2>
-    <p>For this exercise, we will use data from the
-        <a href="https://www.thecocktaildb.com/api.php">CocktailDB API</a>.
-        Specifically we will use the "Filter by alcoholic" endpoint to fetch a list of non-alcoholic drinks.
-        Consult the API documentation to learn more.
-    </p>
+  <h2>Dataset Information</h2>
+  <p>For this exercise, we will use data from the
+     <a href="https://www.thecocktaildb.com/api.php">CocktailDB API</a>.
+     Specifically we will use the "Filter by alcoholic" endpoint to fetch
+     a list of non-alcoholic drinks.
+  </p>
 
-    <h2>Part 1</h2>
-    <p>
-        Write JavaScript code to answer the questions below.
-        Log each of the answers to the console.
-
-        <ol type="A">
-            <li>Consult the API documentation to learn which URL to use to fetch information about non-alcoholic drinks.
-                Store the URL in a variable called <code>requestURL</code>.
-                <strong>HINT:</strong> ensure your URL begins with "http://" or "https://".
-            </li>
-            <li>Fetch the data using the specified URL.</li>
-            <li>Display the number of non-alcoholic drinks (i.e. 58).</li>
-            <li>Loop through the drinks, and display the name and unique identifier of each.</li>
-        </ol>
-    </p>
-
-
-    <h2>Part 2</h2>
-    <p>
-        Write JavaScript code to answer the questions below.
-        Display the answers on the page in the designated areas.
-    </p>
-
+  <h2>Part 1</h2>
+  <p>
+    Log the answers to the console:
     <ol type="A">
-        <li>Using the designated <code>span</code> element below, display the number of drinks (i.e. 58).</li>
-        <li>Loop through the drinks, and display the name and image for each.
-            Using the provided <code>div</code> element below,
-            create a new child <code>div</code> element for each drink.
-            The child <code>div</code> element should contain a <code>p</code> tag to display the drink name,
-            and an <code>img</code> tag to display the image (using an image height of 100px).
-        </li>
-
+      <li>Build <code>requestUrl</code> for non-alcoholic drinks.</li>
+      <li>Fetch the data.</li>
+      <li>Log the number of drinks.</li>
+      <li>Loop and log each drink’s name and ID.</li>
     </ol>
+  </p>
 
-    <hr>
-    <h2>Display</h2>
+  <h2>Part 2</h2>
+  <p>
+    Display the answers on the page:
+    <ol type="A">
+      <li>Show the total count in the <code>span</code> below.</li>
+      <li>For each drink, create a <code>div</code> with a <code>p</code> (name)
+          and an <code>img</code> (thumb, height = 100px).
+      </li>
+    </ol>
+  </p>
 
-    <p>Drinks: <span id="display-drinks-count">TODO</span></p>
-    <div id="display-drinks">
-    </div>
+  <hr>
+  <h2>Display</h2>
+  <p>Drinks: <span id="display-drinks-count">TODO</span></p>
+  <div id="display-drinks"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script type="text/javascript">
+    // 1) THE CORRECT ENDPOINT FOR NON-ALCOHOLIC DRINKS
+    const requestUrl = 
+      "https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Non_Alcoholic";
 
+    // 2) CACHE YOUR DISPLAY ELEMENTS
+    const displayCount     = document.getElementById("display-drinks-count");
+    const displayContainer = document.getElementById("display-drinks");
 
+    // 3) FETCH + LOG (PART 1) + UPDATE PAGE (PART 2)
+    d3.json(requestUrl)
+      .then(data => {
+        const drinks = data.drinks || [];
 
-    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <script type="text/javascript">
+        // ---- PART 1: console output ----
+        console.log("---- PART 1 ----");
+        console.log("Number of drinks:", drinks.length);
+        drinks.forEach(drink => {
+          console.log(`Name: ${drink.strDrink}, ID: ${drink.idDrink}`);
+        });
 
-        var requestUrl = "TODO"
+        // ---- PART 2: update the DOM ----
+        console.log("---- PART 2 ----");
+        displayCount.textContent = drinks.length;
 
-        d3.json(requestUrl).then(function(data){
-            console.log("DATA:", data)
+        // clear out any prior content
+        displayContainer.innerHTML = "";
 
+        drinks.forEach(drink => {
+          // create card
+          const card = document.createElement("div");
+          
+          // name
+          const nameP = document.createElement("p");
+          nameP.textContent = drink.strDrink;
+          
+          // image
+          const thumb = document.createElement("img");
+          thumb.src    = drink.strDrinkThumb;
+          thumb.alt    = drink.strDrink;
+          thumb.height = 100;
 
-            console.log("---------------------")
-            console.log("PART 1...")
+          // assemble & append
+          card.appendChild(nameP);
+          card.appendChild(thumb);
+          displayContainer.appendChild(card);
+        });
+      })
+      .catch(error => {
+        console.error("ERROR fetching drinks:", error);
+      });
+  </script>
 
-
-
-
-
-            console.log("---------------------")
-            console.log("PART 2...")
-
-
-
-
-        })
-
-    </script>
 </body>
 </html>

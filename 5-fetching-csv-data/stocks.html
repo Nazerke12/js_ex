@@ -1,115 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Stocks (CSV)</title>
+  <meta charset="UTF-8">
+  <title>Stocks (CSV)</title>
 </head>
 <body>
 
-    <h1>Stocks (CSV)</h1>
-    <a href="../index.html">Home</a>
+  <h1>Stocks (CSV)</h1>
+  <a href="../index.html">Home</a>
 
-    <h2>Dataset Information</h2>
-    <p>For this exercise, we will use a handful of CSV files that have been uploaded to the Internet.
-        The CSV files contains historical stock data for a number of companies.
-        There is a CSV file for each of the following symbols: AAPL, GOOGL, MSFT, NFLX, NVDA, and SPOT.
-        The name of each CSV file follows a consistent format (e.g.
-        <a href="https://raw.githubusercontent.com/prof-rossetti/intro-software-dev-python-book/refs/heads/main/docs/data/daily_adjusted_NFLX.csv">"daily_adjusted_NFLX.csv"</a>
-        for NFLX).
-        This data was originally obtained from the AlphaVantage API.
-    </p>
+  <h2>Dataset Information</h2>
+  <p>
+    We’re loading historical stock data for several symbols.
+    There’s one CSV per symbol (AAPL, GOOGL, MSFT, NFLX, NVDA, SPOT) named
+    <code>daily_adjusted_[SYMBOL].csv</code>, e.g.
+    <a
+      href="https://raw.githubusercontent.com/prof-rossetti/intro-software-dev-python-book/refs/heads/main/docs/data/daily_adjusted_NFLX.csv"
+      target="_blank" rel="noopener">
+      daily_adjusted_NFLX.csv
+    </a>.
+  </p>
 
-    <h2>Part 1</h2>
-    <p>
-        Write JavaScript code to answer the questions below.
-        Log each of the answers to the console.
-        <strong>NOTE:</strong> Format all prices as currency using a dollar sign and rounding to two decimal places.
-        <strong>NOTE:</strong> Format all percentages with a percent sign and rounded to two decimals.
+  <h2>Part 1 (Console)</h2>
+  <ol>
+    <li>Pick one symbol in the <code>symbol</code> variable.</li>
+    <li>Build <code>requestUrl</code> from it.</li>
+    <li>Load &amp; parse the CSV.</li>
+    <li>Log number of days.</li>
+    <li>Log earliest date + adjusted close.</li>
+    <li>Log latest date + adjusted close.</li>
+    <li>Log overall percent change.</li>
+  </ol>
 
+  <h2>Part 2 (Page)</h2>
+  <ol>
+    <li>Show symbol, earliest, latest, and percent change in the spans below.</li>
+  </ol>
 
-        <ol type="A">
-            <li>Choose one of the stock symbols listed above (i.e. "NFLX"), and store it in a variable called <code>symbol</code>.</li>
-            <li>Dynamically compile the corresponding dataset URL using the <code>symbol</code> variable from Question A,
-                and store it in a variable called <code>requestUrl</code>.</li>
-            <li>Fetch stock data for the chosen symbol, using the <code>requestUrl</code> from Question B.</li>
-            <li>Display the number of days in the provided data (i.e. 100).
-                <strong>NOTE:</strong> It is sufficient to just count the number of row objects.
-            </li>
-            <li>Display the date and adjusted closing price on the earliest day (i.e. "2024-02-05" and "$562.06").
-            </li>
-            <li>
-                Display the date and adjusted closing price on the latest day (i.e. "2024-06-27" and "$684.34").
-            </li>
-            <li>
-                Calculate the overall percent change in adjusted closing price from the earliest to the latest day (i.e. "21.76%").
-            </li>
-        </ol>
-    </p>
+  <hr>
+  <p>Symbol: <span id="display-symbol">TODO</span></p>
+  <p>Earliest: <span id="display-earliest">TODO</span></p>
+  <p>Latest: <span id="display-latest">TODO</span></p>
+  <p>Percent Change: <span id="display-pct-change">TODO</span></p>
 
+  <!-- D3 for CSV parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script type="text/javascript">
+    // Formatting helpers
+    function formatUSD(price) {
+      return `$${price.toFixed(2)}`;
+    }
+    function formatPct(frac) {
+      return `${(frac * 100).toFixed(2)}%`;
+    }
 
-    <h2>Part 2</h2>
-    <p>
-        Write JavaScript code to answer the questions below.
-        Display the answers on the page in the designated areas.
-        <strong>NOTE:</strong> when applicable, use the same currency and percent formatting as in Part 1.
+    // === Part 1A & 1B: choose your symbol & build URL ===
+    var symbol = "NFLX";  // one of: AAPL, GOOGL, MSFT, NFLX, NVDA, SPOT
+    var filename = `daily_adjusted_${symbol}.csv`;
+    var requestUrl = 
+      `https://raw.githubusercontent.com/prof-rossetti/intro-software-dev-python-book/refs/heads/main/docs/data/${filename}`;
 
-        <ol type="A">
-            <li>Using the designated <code>span</code> elements below,
-                display the stock symbol,
-                the earliest day's date and adjusted closing price,
-                the latest day's date and adjusted closing price,
-                and the overall percent change.
-            </li>
+    // === Load & process ===
+    d3.csv(requestUrl).then(function(data) {
+      console.log("DATA loaded:", data);
 
-        </ol>
-    </p>
+      console.log("---------------------");
+      console.log("PART 1…");
 
-    <hr>
-    <h2>Display</h2>
-    <p>Symbol: <span id="display-symbol">TODO</span></p>
-    <p>Earliest: <span id="display-earliest">TODO</span></p>
-    <p>Latest: <span id="display-latest">TODO</span></p>
-    <p>Percent Change: <span id="display-pct-change">TODO</span></p>
+      // Part 1D: Number of days
+      console.log("Number of days:", data.length);
 
+      // The CSV is sorted most‐recent-first, so:
+      var latest = data[0];
+      var earliest = data[data.length - 1];
 
-    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <script type="text/javascript">
+      // Parse adjusted_close as a float
+      var latestAdj = parseFloat(latest.adjusted_close);
+      var earliestAdj = parseFloat(earliest.adjusted_close);
 
-        function formatUSD(price) {
-            return `$${price.toFixed(2)}`
-        }
+      // Part 1E: Earliest day
+      console.log(
+        `Earliest day: ${earliest.timestamp} — ${formatUSD(earliestAdj)}`
+      );
 
-        function formatPct(percentage) {
-            return `${(percentage * 100).toFixed(2)}%`
-        }
+      // Part 1F: Latest day
+      console.log(
+        `Latest day:   ${latest.timestamp} — ${formatUSD(latestAdj)}`
+      );
 
+      // Part 1G: Percent change
+      var pctChange = (latestAdj - earliestAdj) / earliestAdj;
+      console.log("Overall percent change:", formatPct(pctChange));
 
-        var symbol = "NFLX" // one of: [AAPL, GOOGL, MSFT, NFLX, NVDA, SPOT]
-        var filename = `daily_adjusted_${symbol}.csv`
-        var requestUrl = `https://raw.githubusercontent.com/prof-rossetti/intro-software-dev-python-book/refs/heads/main/docs/data/${filename}`
+      console.log("---------------------");
+      console.log("PART 2…");
 
-        d3.csv(requestUrl).then(function(data) {
-            console.log("DATA:", data)
+      // Part 2: write to the page
+      document.getElementById("display-symbol").textContent = symbol;
+      document.getElementById("display-earliest").textContent =
+        `${earliest.timestamp}: ${formatUSD(earliestAdj)}`;
+      document.getElementById("display-latest").textContent =
+        `${latest.timestamp}: ${formatUSD(latestAdj)}`;
+      document.getElementById("display-pct-change").textContent =
+        formatPct(pctChange);
 
-            console.log("---------------------")
-            console.log("PART 1...")
-
-
-
-
-
-            console.log("---------------------")
-            console.log("PART 2...")
-
-
-
-
-
-
-            }).catch(function(error) {
-                console.error("ERROR:", error)
-        })
-
-    </script>
+    }).catch(function(error) {
+      console.error("ERROR loading CSV:", error);
+    });
+  </script>
 </body>
 </html>
